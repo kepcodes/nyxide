@@ -1,0 +1,55 @@
+{
+  "name": "nyxide",
+  "version": "0.1.0",
+  "description": "NyxIDE — простая IDE для разработки",
+  "main": "main.js",
+  "author": "kep",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:linux": "electron-builder --linux",
+    "build:win": "electron-builder --win",
+    "build:all": "electron-builder -lwm"
+  },
+  "build": {
+    "appId": "com.nyxos.nyxide",
+    "productName": "NyxIDE",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/**/*",
+      "node_modules/**/*",
+      "!node_modules/.cache/**/*",
+      "!dist/**/*"
+    ],
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Development",
+      "icon": "assets/logo.png",
+      "synopsis": "NyxIDE — простая IDE для разработки"
+    },
+    "win": {
+      "target": ["nsis", "portable"],
+      "icon": "assets/logo.png"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "icon": "assets/logo.png",
+      "category": "public.app-category.developer-tools"
+    }
+  },
+   "dependencies": {
+    "monaco-editor": "^0.56.0",
+    "node-pty": "^1.1.0"
+  },
+  "devDependencies": {
+    "electron": "^44.4.2",
+    "electron-builder": "^26.15.3"
+  }
+}

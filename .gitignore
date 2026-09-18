@@ -1,0 +1,31 @@
+# Node
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# Build
+dist/
+build/
+out/
+*.AppImage
+*.deb
+*.rpm
+*.exe
+*.dmg
+
+# System
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs
+*.log
+
+# Временные
+tmp/
+temp/

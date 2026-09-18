@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<title>NyxIDE</title>
+<link rel="icon" href="../assets/logo.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="titlebar">
+    <div class="titlebar-left">
+        <img src="../assets/logo.png" alt="" class="titlebar-logo">
+        <span class="titlebar-title">NyxIDE</span>
+        <div class="menubar">
+            <button class="menu-btn" data-menu="file">Файл</button>
+            <button class="menu-btn" data-menu="edit">Правка</button>
+            <button class="menu-btn" data-menu="view">Вид</button>
+            <button class="menu-btn" data-menu="window">Окно</button>
+            <button class="menu-btn" data-menu="help">Справка</button>
+        </div>
+    </div>
+    <div class="titlebar-right">
+        <button class="win-btn" id="winMin" title="Свернуть">─</button>
+        <button class="win-btn" id="winMax" title="Развернуть">□</button>
+        <button class="win-btn win-close" id="winClose" title="Закрыть">✕</button>
+    </div>
+</div>
+
+<div id="dropdown-file" class="dropdown hidden">
+    <button data-action="openFolder">📂 Открыть папку…</button>
+    <button data-action="newFile">📄 Новый файл</button>
+    <button data-action="newFolder">📁 Новая папка</button>
+    <hr>
+    <button data-action="save">💾 Сохранить <span class="shortcut">Ctrl+S</span></button>
+    <button data-action="saveAll">💾 Сохранить всё <span class="shortcut">Ctrl+Shift+S</span></button>
+    <hr>
+    <button data-action="quit">🚪 Выход</button>
+</div>
+
+<div id="dropdown-edit" class="dropdown hidden">
+    <button data-action="undo">↶ Отменить <span class="shortcut">Ctrl+Z</span></button>
+    <button data-action="redo">↷ Повторить <span class="shortcut">Ctrl+Y</span></button>
+    <hr>
+    <button data-action="find">🔍 Найти <span class="shortcut">Ctrl+F</span></button>
+    <button data-action="replace">🔄 Заменить <span class="shortcut">Ctrl+H</span></button>
+</div>
+
+<div id="dropdown-view" class="dropdown hidden">
+    <button data-action="toggleSidebar">📁 Показать/скрыть файлы</button>
+    <button data-action="toggleTerminal">⌨ Показать/скрыть терминал <span class="shortcut">Ctrl+`</span></button>
+    <hr>
+    <button data-action="settings">⚙ Настройки редактора <span class="shortcut">Ctrl+,</span></button>
+    <hr>
+    <button data-action="theme-dark">🌙 Тёмная тема</button>
+    <button data-action="theme-light">☀️ Светлая тема</button>
+    <button data-action="theme-high">🔲 Высокий контраст</button>
+</div>
+
+<div id="dropdown-window" class="dropdown hidden">
+    <button data-action="fullscreen">⛶ Полный экран <span class="shortcut">F11</span></button>
+    <button data-action="minimize">🗕 Свернуть</button>
+    <hr>
+    <button data-action="zoomIn">➕ Увеличить</button>
+    <button data-action="zoomOut">➖ Уменьшить</button>
+    <button data-action="zoomReset">↺ Сбросить масштаб</button>
+</div>
+
+<div id="dropdown-help" class="dropdown hidden">
+    <button data-action="about">ℹ О NyxIDE</button>
+</div>
+
+<div id="app">
+    <aside id="sidebar">
+        <div class="sidebar-actions">
+            <button id="openFolderBtn" title="Открыть папку">📂</button>
+            <button id="newFileBtn" title="Создать файл">📄</button>
+            <button id="newFolderBtn" title="Создать папку">📁</button>
+            <button id="refreshBtn" title="Обновить">🔄</button>
+        </div>
+        <div class="search-box">
+            <input type="text" id="fileSearch" placeholder="Поиск файлов...">
+        </div>
+        <div id="fileTree" class="file-tree">
+            <div class="empty-hint">Папка не открыта<br><br>Нажми 📂</div>
+        </div>
+    </aside>
+
+    <main id="editor-area">
+        <div id="tabs" class="tabs"></div>
+        <div id="editor-container"></div>
+        <div id="statusbar" class="statusbar">
+            <span id="statusFile">—</span>
+            <span id="statusLang"></span>
+            <span id="statusPos"></span>
+            <span id="statusSaved"></span>
+        </div>
+    </main>
+</div>
+
+<div id="terminal-panel">
+    <div class="terminal-header">
+        <button class="term-tab active">Терминал</button>
+        <span id="terminalStatus">bash</span>
+        <button id="terminalClearBtn" title="Очистить">🧹</button>
+        <button id="terminalRestartBtn" title="Перезапустить">🔄</button>
+        <button id="terminalCloseBtn" title="Скрыть">✕</button>
+    </div>
+    <div id="terminal-container"></div>
+</div>
+
+<div id="editorSettingsModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Настройки редактора</h2>
+            <button class="modal-close" data-close="editorSettingsModal">✕</button>
+        </div>
+        <label>Размер шрифта: <span id="fontSizeVal">14</span>px</label>
+        <input type="range" id="fontSizeRange" min="10" max="24" value="14">
+        <label>Перенос строк</label>
+        <select id="wordWrapSelect">
+            <option value="off">Выкл</option>
+            <option value="on">Вкл</option>
+        </select>
+        <label>Миникарта</label>
+        <select id="minimapSelect">
+            <option value="true">Вкл</option>
+            <option value="false">Выкл</option>
+        </select>
+        <label>Тема</label>
+        <select id="themeSelect">
+            <option value="dark">Тёмная (NyxOS)</option>
+            <option value="light">Светлая</option>
+            <option value="high-contrast">Высокий контраст</option>
+        </select>
+        <div class="modal-actions">
+            <button id="closeEditorSettingsBtn" class="btn-secondary">Отмена</button>
+            <button id="saveEditorSettingsBtn" class="btn-primary">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<div id="aboutModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>О NyxIDE</h2>
+            <button class="modal-close" data-close="aboutModal">✕</button>
+        </div>
+        <div style="text-align:center; padding: 20px 0;">
+            <img src="../assets/logo.png" style="width:80px; height:80px; margin-bottom:16px;">
+            <h3>NyxIDE 0.1</h3>
+            <p style="color:var(--muted); margin-top:8px;">Простая IDE для разработки</p>
+            <p style="color:var(--muted); margin-top:4px; font-size:12px;">Electron + Monaco + xterm.js</p>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-primary" data-close="aboutModal">ОК</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js"></script>
+<script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
