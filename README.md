@@ -25,7 +25,7 @@
 ### Установка и запуск
 
 ```bash
-git clone https://github.com/ТВОЙ_НИК/nyxide.git
+git clone https://github.com/kepcodes/nyxide.git
 cd nyxide
 npm install
 npm start
